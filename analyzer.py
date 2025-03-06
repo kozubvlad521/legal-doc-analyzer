@@ -23,36 +23,44 @@ def create_analysis_prompt(text, query, analysis_type=None):
 
 def get_analysis(prompt, max_retries=3, timeout=60):
     """Отримання аналізу від OpenAI API з повторними спробами та таймаутом"""
-    # Обмежуємо розмір тексту до ~4000 символів (приблизно 1000 токенів)
-    max_text_length = 4000
+    # Обмежуємо розмір тексту до ~2000 символів для зменшення навантаження
+    max_text_length = 2000
     if len(prompt) > max_text_length:
-        # Якщо текст завеликий, беремо перші 4000 символів
         prompt = prompt[:max_text_length] + "\n[Текст було скорочено через обмеження розміру...]"
+
+    print(f"Відправляємо запит до OpenAI API (модель: {MODEL_NAME})")
+    print(f"Розмір промпту: {len(prompt)} символів")
 
     for attempt in range(max_retries):
         try:
             print(f"Спроба {attempt + 1} з {max_retries}")
-            print(f"Розмір промпту: {len(prompt)} символів")
             response = client.chat.completions.create(
                 model=MODEL_NAME,
                 messages=[
                     {"role": "system", "content": "Ви експерт з аналізу юридичних документів. Надайте чіткий, структурований аналіз з ключовими пунктами та рекомендаціями українською мовою."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.2,
-                max_tokens=2000,
+                temperature=0.2,  # Зменшено для більш стабільних відповідей
+                max_tokens=1000,  # Зменшено для оптимізації використання токенів
                 timeout=timeout
             )
+            print("Успішно отримано відповідь від API")
             return response.choices[0].message.content
+
         except Exception as e:
             error_msg = str(e)
             print(f"Помилка при спробі {attempt + 1}: {error_msg}")
 
-            if "authentication" in error_msg.lower():
+            if "rate_limit" in error_msg.lower():
+                wait_time = 2 ** attempt
+                print(f"Перевищено ліміт запитів, очікуємо {wait_time} секунд...")
+                time.sleep(wait_time)
+                continue
+            elif "authentication" in error_msg.lower():
                 return "Помилка автентифікації API ключа. Будь ласка, перевірте налаштування."
             elif "timeout" in error_msg.lower():
                 if attempt < max_retries - 1:
-                    print(f"Таймаут, очікування перед повторною спробою...")
+                    print(f"Таймаут, очікування {2 ** attempt} секунд перед повторною спробою...")
                     time.sleep(2 ** attempt)
                     continue
                 return "Перевищено час очікування відповіді від API"
