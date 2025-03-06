@@ -3,7 +3,7 @@ from openai import OpenAI
 import json
 import time
 
-MODEL_NAME = "gpt-4"
+MODEL_NAME = "gpt-3.5-turbo"  # Changed from gpt-4 to gpt-3.5-turbo
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
