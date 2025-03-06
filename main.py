@@ -5,6 +5,11 @@ from document_processor import extract_text
 from analyzer import analyze_document
 from utils import download_results, create_docx_results
 
+# Add logging at startup
+print("Starting Streamlit application...")
+print(f"Environment PORT: {os.environ.get('PORT', 'Not set')}")
+print(f"Current working directory: {os.getcwd()}")
+
 def main():
     st.set_page_config(
         page_title="Аналізатор Юридичних Документів",
@@ -234,14 +239,20 @@ def main():
         """)
 
 if __name__ == "__main__":
-    # Get the port from environment variable or use default
-    port = int(os.environ.get("PORT", 5000))
+    try:
+        print("Initializing application...")
+        # Get the port from environment variable or use default
+        port = int(os.environ.get("PORT", 5000))
 
-    # Set Streamlit configuration
-    st.set_page_config(
-        page_title="Аналізатор Юридичних Документів",
-        page_icon="⚖️",
-        layout="wide"
-    )
+        # Set Streamlit configuration
+        st.set_page_config(
+            page_title="Аналізатор Юридичних Документів",
+            page_icon="⚖️",
+            layout="wide"
+        )
 
-    main()
+        main()
+        print("Application started successfully")
+    except Exception as e:
+        print(f"Error starting application: {str(e)}")
+        raise
