@@ -10,13 +10,14 @@ print("Starting Streamlit application...")
 print(f"Environment PORT: {os.environ.get('PORT', 'Not set')}")
 print(f"Current working directory: {os.getcwd()}")
 
-def main():
-    st.set_page_config(
-        page_title="Аналізатор Юридичних Документів",
-        page_icon="⚖️",
-        layout="wide"
-    )
+# Set Streamlit configuration - must be first Streamlit command
+st.set_page_config(
+    page_title="Аналізатор Юридичних Документів",
+    page_icon="⚖️",
+    layout="wide"
+)
 
+def main():
     st.markdown("""
         <style>
         .main-header {
@@ -241,16 +242,6 @@ def main():
 if __name__ == "__main__":
     try:
         print("Initializing application...")
-        # Get the port from environment variable or use default
-        port = int(os.environ.get("PORT", 5000))
-
-        # Set Streamlit configuration
-        st.set_page_config(
-            page_title="Аналізатор Юридичних Документів",
-            page_icon="⚖️",
-            layout="wide"
-        )
-
         main()
         print("Application started successfully")
     except Exception as e:
