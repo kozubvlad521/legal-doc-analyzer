@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 from document_processor import extract_text
@@ -233,4 +234,14 @@ def main():
         """)
 
 if __name__ == "__main__":
+    # Get the port from environment variable or use default
+    port = int(os.environ.get("PORT", 5000))
+
+    # Set Streamlit configuration
+    st.set_page_config(
+        page_title="Аналізатор Юридичних Документів",
+        page_icon="⚖️",
+        layout="wide"
+    )
+
     main()
